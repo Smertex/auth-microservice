@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/auth-microservice.iml" filepath="$PROJECT_DIR$/.idea/auth-microservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/authentication-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/authentication-service.main.iml" />
     </modules>
   </component>
 </project>
