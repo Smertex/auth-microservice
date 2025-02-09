@@ -1,4 +1,4 @@
-package by.smertex.email_sender_service;
+package by.smertex;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
