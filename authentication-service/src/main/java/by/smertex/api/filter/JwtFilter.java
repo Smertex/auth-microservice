@@ -34,14 +34,19 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader(HEADER);
         String username = null;
-        if(authHeader != null && authHeader.startsWith(BEARER)){
+
+        if (authHeader != null && authHeader.startsWith(BEARER)) {
             String jwt = authHeader.substring(BEARER.length());
-            try{
+            try {
                 username = jwtUtil.getUsername(jwt);
-            } catch (ExpiredJwtException e){
-                response.getWriter().write(objectMapper.writeValueAsString(responseException(response, "Expired token exception")));
-            } catch (SignatureException e){
-                response.getWriter().write(objectMapper.writeValueAsString(responseException(response, "Signature token exception")));
+            } catch (ExpiredJwtException e) {
+                response.getWriter().write(
+                        objectMapper.writeValueAsString(responseException(response, "Expired token exception"))
+                );
+            } catch (SignatureException e) {
+                response.getWriter().write(
+                        objectMapper.writeValueAsString(responseException(response, "Signature token exception"))
+                );
             }
         }
 
@@ -59,6 +64,6 @@ public class JwtFilter extends OncePerRequestFilter {
     private String responseException(HttpServletResponse response, String message) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        return new String(message);
+        return message;
     }
 }

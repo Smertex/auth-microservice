@@ -31,4 +31,10 @@ public class EmailCodeRepositoryImpl implements EmailCodeRepository {
         ValueOperations<String, EmailCode> operations = redisTemplate.opsForValue();
         operations.set(emailCode.getEmail(), emailCode, lifetime);
     }
+
+    @Override
+    public void remove(String email) {
+        ValueOperations<String, EmailCode> operations = redisTemplate.opsForValue();
+        operations.getAndDelete(email);
+    }
 }

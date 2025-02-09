@@ -8,4 +8,6 @@ public interface EmailCodeRepository {
     Optional<EmailCode> findByEmail(String email);
 
     void save(EmailCode emailCode);
+
+    void remove(String email);
 }

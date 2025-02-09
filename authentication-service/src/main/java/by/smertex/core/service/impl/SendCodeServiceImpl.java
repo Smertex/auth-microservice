@@ -7,10 +7,12 @@ import by.smertex.core.mapper.Mapper;
 import by.smertex.core.service.SendCodeService;
 import by.smertex.core.util.Cryptographer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SendCodeServiceImpl implements SendCodeService {
@@ -33,11 +35,11 @@ public class SendCodeServiceImpl implements SendCodeService {
     }
 
     @Override
-
     public void sendCode(SecurityUserDto dto) {
         kafkaTemplate.send("email-notification-event-topic", null, emailNotificationEventSecurityUserDtoMapper.map(dto))
-        .exceptionally(exception -> {
-            throw new KafkaResponseException(exception.getMessage());
-        });
+                .exceptionally(exception -> {
+                    log.error("Error sending message from email %s".formatted(dto.email()), exception);
+                    throw new KafkaResponseException(exception.getMessage());
+                });
     }
 }

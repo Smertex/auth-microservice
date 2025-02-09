@@ -7,8 +7,10 @@ import by.smertex.core.service.VerificationService;
 import by.smertex.core.util.Cryptographer;
 import by.smertex.core.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class VerificationServiceImpl implements VerificationService {
@@ -25,9 +27,14 @@ public class VerificationServiceImpl implements VerificationService {
                 .filter(emailCode ->
                         emailCode.getCode().equals(dto.code())
                 )
-                .map(emailCode ->
-                        jwtUtil.generateToken(emailCode.getEmail())
-                )
-                .orElseThrow(() -> new VerificationException("Email incorrect or code not found"));
+                .map(emailCode -> {
+                    log.info("Jwt сгенерирован для пользователя %s".formatted(emailCode.getEmail()));
+                    emailCodeRepository.remove(emailCode.getEmail());
+                    return jwtUtil.generateToken(emailCode.getEmail());
+                })
+                .orElseThrow(() -> {
+                    log.info("Ошибка генерация Jwt, некорректная почта или код");
+                    return new VerificationException("Email incorrect or code not found");
+                });
     }
 }

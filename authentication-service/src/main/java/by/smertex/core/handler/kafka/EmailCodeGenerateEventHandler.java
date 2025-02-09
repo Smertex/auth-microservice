@@ -5,11 +5,13 @@ import by.smertex.core.database.repository.EmailCodeRepository;
 import by.smertex.core.dto.event.EmailCodeGenerateEvent;
 import by.smertex.core.mapper.Mapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class EmailCodeGenerateEventHandler {
 
     private final EmailCodeRepository emailCodeRepository;
@@ -21,5 +23,6 @@ public class EmailCodeGenerateEventHandler {
         emailCodeRepository.save(
                 emailCodeGenerateEventMapper.map(event)
         );
+        log.info("Message with code saved");
     }
 }
