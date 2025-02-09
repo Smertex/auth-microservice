@@ -1,5 +1,0 @@
-version: "1.0"
-
-services:
-  kafka-1:
-    image: bitnami/kafka:latest

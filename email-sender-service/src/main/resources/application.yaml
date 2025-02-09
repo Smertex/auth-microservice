@@ -18,8 +18,8 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       group-id: email-notification-events
       properties:
-        value:
-          deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: "*"
+        value.deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 
 email-code:
   length: 6

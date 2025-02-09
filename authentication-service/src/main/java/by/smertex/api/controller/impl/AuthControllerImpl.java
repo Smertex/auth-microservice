@@ -21,14 +21,14 @@ public class AuthControllerImpl implements AuthController {
     private final VerificationService verificationService;
 
     @PostMapping("/get-access-code")
-    public ResponseEntity<String> sendCodeForAccess(@RequestParam SecurityUserDto dto) {
+    public ResponseEntity<String> sendCodeForAccess(@RequestBody SecurityUserDto dto) {
         return ResponseEntity.ok()
                 .body(sendCodeService.redirect(dto));
     }
 
     @PostMapping("/{hiddenEmail}")
     public ResponseEntity<String> generateToken(@PathVariable String hiddenEmail,
-                                                @RequestParam SecurityEmailCode dto) {
+                                                @RequestBody SecurityEmailCode dto) {
         return ResponseEntity.ok()
                 .body(verificationService.generateToken(hiddenEmail, dto));
     }

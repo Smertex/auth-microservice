@@ -25,11 +25,9 @@ public class SecurityConfiguration {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests.requestMatchers("/security").anonymous()
+                        authorizeRequests.requestMatchers("/security/**").anonymous()
                                          .requestMatchers("/test-controller").authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
-
 }
