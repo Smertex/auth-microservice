@@ -5,7 +5,7 @@ COPY gradle gradle
 COPY build.gradle settings.gradle gradlew ./
 COPY src src
 
-RUN chmod +x gradlew && ./gradlew build -x test
+RUN chmod +x gradlew && ./gradlew clean build -x test
 
 FROM eclipse-temurin:21-jre-alpine
 ARG DEPENDENCY=/app/build
