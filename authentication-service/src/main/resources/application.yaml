@@ -1,0 +1,42 @@
+spring:
+
+  application:
+    name: authentication-service
+
+  kafka:
+    producer:
+      bootstrap-servers: kafka-1:9090,kafka-2:9090
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable:
+          idempotence: true
+
+    consumer:
+      bootstrap-servers: kafka-1:9090,kafka-2:9090
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      group-id: email-code-generate-events
+      properties:
+        spring.json.trusted.packages: "*"
+        value.deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+  cache:
+    redis:
+      code:
+        lifetime: 5m
+
+jwt:
+  secret: gHZxKJhGZRPcSL8gSDpC5l3ClQefhJmg
+  lifetime: 300m
+
+url:
+  secret: KxpxeEBpopxAlnPsj8C2h1Gev1zIJvhZ
+
+server:
+  port: 8090

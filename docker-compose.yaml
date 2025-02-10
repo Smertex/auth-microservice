@@ -1,0 +1,98 @@
+version: "1.0"
+
+networks:
+  kafka-net:
+    driver: bridge
+
+services:
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+
+  kafka-1:
+    container_name: kafka-1
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_KRAFT_CLUSTER_ID=14e8cb20-5162-429b-8980-561d33096a4d
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9091,2@kafka-2:9091,3@kafka-3:9091
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9090,CONTROLLER://:9091,EXTERNAL://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:9090,EXTERNAL://kafka-1:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    volumes:
+      - ./volumes/server-1/:/bitnami/kafka
+    networks:
+      - kafka-net
+
+  kafka-2:
+    container_name: kafka-2
+    image: bitnami/kafka:latest
+    ports:
+      - "9094:9094"
+    environment:
+      - KAFKA_CFG_NODE_ID=2
+      - KAFKA_KRAFT_CLUSTER_ID=14e8cb20-5162-429b-8980-561d33096a4d
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9091,2@kafka-2:9091,3@kafka-3:9091
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9090,CONTROLLER://:9091,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-2:9090,EXTERNAL://kafka-2:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    volumes:
+      - ./volumes/server-2/:/bitnami/kafka
+    networks:
+      - kafka-net
+
+  kafka-3:
+    container_name: kafka-3
+    image: bitnami/kafka:latest
+    ports:
+      - "9096:9096"
+    environment:
+      - KAFKA_CFG_NODE_ID=3
+      - KAFKA_KRAFT_CLUSTER_ID=14e8cb20-5162-429b-8980-561d33096a4d
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9091,2@kafka-2:9091,3@kafka-3:9091
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9090,CONTROLLER://:9091,EXTERNAL://:9096
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-3:9090,EXTERNAL://kafka-3:9096
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    volumes:
+      - ./volumes/server-3/:/bitnami/kafka
+    networks:
+      - kafka-net
+
+  authentication-service:
+    build: ./authentication-service
+    ports:
+      - 8090:8090
+    depends_on:
+      - kafka-1
+      - kafka-2
+    environment:
+      - SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS=kafka-1:9090,kafka-2:9090
+      - SPRING_KAFKA_CONSUMER_BOOTSTRAP-SERVERS=kafka-1:9090,kafka-2:9090
+    networks:
+      - kafka-net
+
+  email-sender-service:
+    build: ./email-sender-service
+    depends_on:
+      - kafka-1
+      - kafka-2
+    environment:
+      - SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS=kafka-1:9090,kafka-2:9090
+      - SPRING_KAFKA_CONSUMER_BOOTSTRAP-SERVERS=kafka-1:9090,kafka-2:9090
+    networks:
+      - kafka-net

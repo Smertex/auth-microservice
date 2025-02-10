@@ -1,0 +1,29 @@
+spring:
+
+  application:
+    name: email-sender-service
+
+  kafka:
+    producer:
+      bootstrap-servers: kafka-1:9090,kafka-2:9090
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable:
+          idempotence: true
+
+    consumer:
+      bootstrap-servers: kafka-1:9090,kafka-2:9090
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      group-id: email-notification-events
+      properties:
+        spring.json.trusted.packages: "*"
+        value.deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+email-code:
+  length: 6
+  pattern: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+
+server:
+  port: 0
